@@ -5,9 +5,9 @@ export type Channel = {
   name: string;
   status: ChannelStatus;
   url: string;
-  lastChecked?: number;
   priority: number;
   errorCount: number;
+  lastChecked?: number;
 };
 
 export type Options = {

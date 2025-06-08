@@ -9,7 +9,7 @@ export enum ChannelStatus {
 export const CHANNELS: Channel[] = [
   {
     id: "kakoetoApi1",
-    name: "Main API",
+    name: "Main HTTPS API",
     status: ChannelStatus.Idle,
     url: "https://kakoetoApi1.example.com",
     priority: CHANNEL_MAX_PRIORITY,
@@ -17,15 +17,15 @@ export const CHANNELS: Channel[] = [
   },
   {
     id: "kakoetoApi2",
-    name: "Backup API",
+    name: "Backup HTTP API",
     status: ChannelStatus.Idle,
-    url: "https://kakoetoApi2.example.com",
+    url: "http://kakoetoApi2.example.com",
     priority: CHANNEL_MAX_PRIORITY,
     errorCount: 0,
   },
   {
     id: "kakoetoApi3",
-    name: "WebSocket API",
+    name: "Main WSS API",
     status: ChannelStatus.Idle,
     url: "wss://kakoetoApi3.example.com",
     priority: CHANNEL_MAX_PRIORITY,
@@ -33,6 +33,14 @@ export const CHANNELS: Channel[] = [
   },
   {
     id: "kakoetoApi4",
+    name: "Backup WS API",
+    status: ChannelStatus.Idle,
+    url: "ws://kakoetoApi4.example.com",
+    priority: CHANNEL_MAX_PRIORITY,
+    errorCount: 0,
+  },
+  {
+    id: "kakoetoApi5",
     name: "JSON Placeholder",
     status: ChannelStatus.Idle,
     url: "https://jsonplaceholder.typicode.com/",
@@ -43,5 +51,5 @@ export const CHANNELS: Channel[] = [
 
 export const INITIAL_OPTIONS: InitialOptions = {
   checkIntervalTime: 5000,
-  retryIntervalTime: 20000,
+  retryIntervalTime: 15000,
 };
