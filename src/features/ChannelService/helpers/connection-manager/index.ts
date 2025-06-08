@@ -56,8 +56,6 @@ export class ConnectionManager {
   }
 
   private async checkChannel(channel: Channel): Promise<void> {
-    console.log("channel", channel.id);
-
     try {
       this.isTestingConnection = true;
 
