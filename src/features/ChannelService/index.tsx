@@ -1,5 +1,9 @@
 import { ChannelInfo } from "./components/ChannelInfo";
 import { CHANNELS } from "./constants";
+import {
+  ALL_CHANNELS_HEADING_AREA_LABELLEDBY,
+  CURRENT_CHANNEL_HEADING_AREA_LABELLEDBY,
+} from "./constants/accessibility";
 import { useConnectionManager } from "./helpers";
 
 export const ChannelService = () => {
@@ -12,9 +16,9 @@ export const ChannelService = () => {
 
   return (
     <article role="main">
-      <h1>Полезная информация</h1>
-      <section aria-labelledby="all-channels-heading">
-        <h2 id="all-channels-heading">Информация о всех каналах</h2>
+      <h1>Информация</h1>
+      <section aria-labelledby={ALL_CHANNELS_HEADING_AREA_LABELLEDBY}>
+        <h2 id={ALL_CHANNELS_HEADING_AREA_LABELLEDBY}>О всех каналах</h2>
         <ul>
           {channels.map((item) => (
             <li key={item.id}>
@@ -24,8 +28,8 @@ export const ChannelService = () => {
         </ul>
       </section>
       {currentChannel && (
-        <section aria-labelledby="current-channels-heading">
-          <h2 id="current-channels-heading">Информация о текущем канале</h2>
+        <section aria-labelledby={CURRENT_CHANNEL_HEADING_AREA_LABELLEDBY}>
+          <h2 id={CURRENT_CHANNEL_HEADING_AREA_LABELLEDBY}>О текущем канале</h2>
           <ChannelInfo info={currentChannel} />
         </section>
       )}

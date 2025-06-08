@@ -1,6 +1,11 @@
-import { TestChannels } from "../test-channels";
+import { TestChannelConnection } from "../test-channel-connection";
 import { type Channel, type Options } from "../../types";
-import { CHANNEL_MAX_PRIORITY, ChannelStatus } from "../../constants";
+import {
+  INITIAL_CHANNEL_ERROR_COUNT,
+  CHANNEL_MAX_PRIORITY,
+  CHANNEL_MIN_PRIORITY,
+  ChannelStatus,
+} from "../../constants";
 import type { Intervals, UpdateInfo } from "./types";
 
 export class ConnectionManager {
@@ -9,7 +14,8 @@ export class ConnectionManager {
 
   private currentChannel: Channel | null = null;
   private intervals: Intervals | null = null;
-  private readonly testChannels = new TestChannels();
+  private readonly testChannelConnection = new TestChannelConnection();
+  private isTestingConnection = false;
 
   constructor(channels: Channel[], options: Options) {
     this.channels = channels;
@@ -22,13 +28,17 @@ export class ConnectionManager {
     }
 
     const checkInterval = setInterval(() => {
-      if (this.currentChannel) {
-        this.checkChannel(this.currentChannel);
+      const isReady = Boolean(!this.isTestingConnection && this.currentChannel);
+
+      if (isReady) {
+        this.checkChannel(this.currentChannel!);
       }
     }, this.options.checkIntervalTime);
 
     const retryInterval = setInterval(() => {
-      this.retryUnavailableChannels();
+      if (!this.isTestingConnection) {
+        this.retryUnavailableChannels();
+      }
     }, this.options.retryIntervalTime);
 
     this.intervals = { checkInterval, retryInterval };
@@ -46,24 +56,25 @@ export class ConnectionManager {
   }
 
   private async checkChannel(channel: Channel): Promise<void> {
-    try {
-      const isAlive = await this.testChannels.test(channel);
-      const status = isAlive
-        ? ChannelStatus.Connected
-        : ChannelStatus.Unavailable;
-      const errorCount = isAlive ? 0 : channel.errorCount + 1;
+    console.log("channel", channel.id);
 
+    try {
+      this.isTestingConnection = true;
+
+      const isAlive = await this.testChannelConnection.test(channel);
       const info: UpdateInfo = {
-        status,
-        errorCount,
+        status: isAlive ? ChannelStatus.Connected : ChannelStatus.Unavailable,
+        errorCount: isAlive
+          ? INITIAL_CHANNEL_ERROR_COUNT
+          : channel.errorCount + 1,
       };
 
-      this.updateChannel(channel.id, info);
+      this.updateChannelInfo(channel.id, info);
 
       const isCurrentConnectionAlive =
-        channel.id === this.currentChannel!.id && !isAlive;
+        channel.id === this.currentChannel?.id && isAlive;
 
-      if (isCurrentConnectionAlive) {
+      if (!isCurrentConnectionAlive) {
         this.switchChannel();
       }
     } catch {
@@ -72,43 +83,37 @@ export class ConnectionManager {
         errorCount: channel.errorCount + 1,
       };
 
-      this.updateChannel(channel.id, info);
+      this.updateChannelInfo(channel.id, info);
 
-      if (channel.id === this.currentChannel!.id) {
+      if (channel.id === this.currentChannel?.id) {
         this.switchChannel();
       }
+    } finally {
+      this.isTestingConnection = false;
     }
   }
 
   private calculatePriority(
     errorCount: Channel["errorCount"],
   ): Channel["priority"] {
-    return Math.max(0, CHANNEL_MAX_PRIORITY - errorCount * 10);
+    return Math.max(CHANNEL_MIN_PRIORITY, CHANNEL_MAX_PRIORITY - errorCount);
   }
 
-  private getAvailableChannel = (): Channel | null => {
+  private getAvailableChannel(): Channel | null {
     const filteredChannels = this.channels.filter(
       (item) => item.status === ChannelStatus.Idle,
     );
-    const updatedChannels = filteredChannels.map((item): Channel => {
-      const priority = this.calculatePriority(item.errorCount);
 
-      return {
-        ...item,
-        priority,
-      };
-    });
+    filteredChannels.sort((a, b) => b.priority - a.priority);
 
-    updatedChannels.sort((a, b) => b.priority - a.priority);
-
-    const availableChannels = updatedChannels.filter(
-      (item) => item.priority !== 0,
+    const availableChannels = filteredChannels.filter(
+      (item) => item.priority !== CHANNEL_MIN_PRIORITY,
     );
     const topPriorityChannel = availableChannels.at(0);
     const result = topPriorityChannel ?? null;
 
     return result;
-  };
+  }
 
   private switchChannel(): void {
     const availableChannel = this.getAvailableChannel();
@@ -123,32 +128,44 @@ export class ConnectionManager {
   }
 
   private async retryUnavailableChannels(): Promise<void> {
+    this.isTestingConnection = true;
+
     const unavailableChannels = this.channels.filter(
       (item) => item.status === ChannelStatus.Unavailable,
     );
 
     const checkedChannels = unavailableChannels.map(async (item) => {
-      const isAlive = await this.testChannels.test(item);
+      const isAlive = await this.testChannelConnection.test(item);
 
       if (isAlive) {
         const info: UpdateInfo = {
           status: ChannelStatus.Idle,
-          errorCount: 0,
+          errorCount: INITIAL_CHANNEL_ERROR_COUNT,
         };
 
-        this.updateChannel(item.id, info);
+        this.updateChannelInfo(item.id, info);
+      } else {
+        const info: UpdateInfo = {
+          status: item.status,
+          errorCount: item.errorCount + 1,
+        };
+
+        this.updateChannelInfo(item.id, info);
       }
     });
 
     await Promise.all(checkedChannels);
+
+    this.isTestingConnection = false;
   }
 
-  private updateChannel(channelId: Channel["id"], info: UpdateInfo): void {
+  private updateChannelInfo(channelId: Channel["id"], info: UpdateInfo): void {
     const updatedChannels = this.channels.map((item) => {
       if (item.id === channelId) {
         const lastChecked = Date.now();
+        const priority = this.calculatePriority(info.errorCount);
 
-        return { ...item, ...info, lastChecked };
+        return { ...item, ...info, lastChecked, priority };
       }
 
       return item;

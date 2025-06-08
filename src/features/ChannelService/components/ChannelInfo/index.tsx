@@ -28,6 +28,10 @@ export const ChannelInfo = ({ info }: Props) => {
         <span>{info.url}</span>
       </p>
       <p>
+        <span>Приоритет:</span>
+        <span>{info.priority}</span>
+      </p>
+      <p>
         <span>Последнее время использования:</span>
         <span>{formattedTime}</span>
       </p>

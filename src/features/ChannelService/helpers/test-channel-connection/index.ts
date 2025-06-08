@@ -1,7 +1,7 @@
 import type { Channel } from "../../types";
 import { ProtocolPrefix } from "./constants";
 
-export class TestChannels {
+export class TestChannelConnection {
   public async test(channel: Channel): Promise<boolean> {
     if (channel.url.startsWith(ProtocolPrefix.Http)) {
       return this.testHttpPrefixChannel(channel);

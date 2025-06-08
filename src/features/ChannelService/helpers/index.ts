@@ -43,9 +43,7 @@ export const useConnectionManager = (initialChannels: Channel[]) => {
       isMounted = false;
       managerRef.current!.stop();
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialChannels]);
 
   return { channels, currentChannel, errorMessage };
 };

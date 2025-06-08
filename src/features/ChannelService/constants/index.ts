@@ -1,6 +1,8 @@
 import { type Channel, type InitialOptions } from "../types";
 
-export const CHANNEL_MAX_PRIORITY = 100;
+export const CHANNEL_MAX_PRIORITY = 10;
+export const CHANNEL_MIN_PRIORITY = 0;
+export const INITIAL_CHANNEL_ERROR_COUNT = 0;
 export enum ChannelStatus {
   Idle = "IDLE",
   Connected = "CONNECTED",
@@ -8,48 +10,48 @@ export enum ChannelStatus {
 }
 export const CHANNELS: Channel[] = [
   {
-    id: "kakoetoApi1",
+    id: "1",
     name: "Main HTTPS API",
     status: ChannelStatus.Idle,
     url: "https://kakoetoApi1.example.com",
     priority: CHANNEL_MAX_PRIORITY,
-    errorCount: 0,
+    errorCount: INITIAL_CHANNEL_ERROR_COUNT,
   },
   {
-    id: "kakoetoApi2",
+    id: "2",
     name: "Backup HTTP API",
     status: ChannelStatus.Idle,
     url: "http://kakoetoApi2.example.com",
     priority: CHANNEL_MAX_PRIORITY,
-    errorCount: 0,
+    errorCount: INITIAL_CHANNEL_ERROR_COUNT,
   },
   {
-    id: "kakoetoApi3",
+    id: "3",
     name: "Main WSS API",
     status: ChannelStatus.Idle,
     url: "wss://kakoetoApi3.example.com",
     priority: CHANNEL_MAX_PRIORITY,
-    errorCount: 0,
+    errorCount: INITIAL_CHANNEL_ERROR_COUNT,
   },
   {
-    id: "kakoetoApi4",
+    id: "4",
     name: "Backup WS API",
     status: ChannelStatus.Idle,
     url: "ws://kakoetoApi4.example.com",
     priority: CHANNEL_MAX_PRIORITY,
-    errorCount: 0,
+    errorCount: INITIAL_CHANNEL_ERROR_COUNT,
   },
   {
-    id: "kakoetoApi5",
+    id: "5",
     name: "JSON Placeholder",
     status: ChannelStatus.Idle,
     url: "https://jsonplaceholder.typicode.com/",
     priority: CHANNEL_MAX_PRIORITY,
-    errorCount: 0,
+    errorCount: INITIAL_CHANNEL_ERROR_COUNT,
   },
 ];
 
 export const INITIAL_OPTIONS: InitialOptions = {
-  checkIntervalTime: 5000,
+  checkIntervalTime: 2000,
   retryIntervalTime: 15000,
 };
