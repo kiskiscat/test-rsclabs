@@ -7,9 +7,9 @@ export class TestChannels {
       return this.testHttpPrefixChannel(channel);
     } else if (channel.url.startsWith(ProtocolPrefix.Ws)) {
       return this.testWsPrefixChannel(channel);
+    } else {
+      return false;
     }
-
-    return false;
   }
 
   private async testHttpPrefixChannel(channel: Channel): Promise<boolean> {
@@ -24,24 +24,36 @@ export class TestChannels {
 
   private async testWsPrefixChannel(channel: Channel): Promise<boolean> {
     return new Promise((resolve) => {
-      const ws = new WebSocket(channel.url);
+      try {
+        const ws = new WebSocket(channel.url);
 
-      const timeout = setTimeout(() => {
-        ws.close();
+        const timeout = setTimeout(() => {
+          ws.close();
+          resolve(false);
+        }, 2000);
 
+        const cleanup = () => {
+          clearTimeout(timeout);
+          ws.removeEventListener("open", handleOpen);
+          ws.removeEventListener("error", handleError);
+          ws.close();
+        };
+
+        const handleOpen = () => {
+          cleanup();
+          resolve(true);
+        };
+
+        const handleError = () => {
+          cleanup();
+          resolve(false);
+        };
+
+        ws.addEventListener("open", handleOpen);
+        ws.addEventListener("error", handleError);
+      } catch {
         resolve(false);
-      }, 2000);
-
-      ws.onopen = () => {
-        clearTimeout(timeout);
-        ws.close();
-
-        resolve(true);
-      };
-
-      ws.onerror = () => {
-        clearTimeout(timeout);
-      };
+      }
     });
   }
 }

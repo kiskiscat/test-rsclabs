@@ -4,29 +4,33 @@ export type Props = {
   info: Channel;
 };
 
-export const ChannelInfo = ({ info }: Props) => (
-  <div>
-    <p>
-      <span>Имя:</span>
-      <span>{info.name}</span>
-    </p>
-    <p>
-      <span>ID:</span>
-      <span>{info.id}</span>
-    </p>
-    <p>
-      <span>Последнее время использования:</span>
-      <span>{info.status}</span>
-    </p>
-    <p>
-      <span>URL:</span>
-      <span>{info.url}</span>
-    </p>
-    {info.lastChecked && (
+export const ChannelInfo = ({ info }: Props) => {
+  const formattedTime = info.lastChecked
+    ? new Date(info.lastChecked).toLocaleString()
+    : "—";
+
+  return (
+    <div>
+      <p>
+        <span>Имя:</span>
+        <span>{info.name}</span>
+      </p>
+      <p>
+        <span>ID:</span>
+        <span>{info.id}</span>
+      </p>
+      <p>
+        <span>Статус:</span>
+        <span>{info.status}</span>
+      </p>
+      <p>
+        <span>URL:</span>
+        <span>{info.url}</span>
+      </p>
       <p>
         <span>Последнее время использования:</span>
-        <span>{info.lastChecked}</span>
+        <span>{formattedTime}</span>
       </p>
-    )}
-  </div>
-);
+    </div>
+  );
+};

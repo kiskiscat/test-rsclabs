@@ -6,6 +6,8 @@ export type Channel = {
   status: ChannelStatus;
   url: string;
   lastChecked?: number;
+  priority: number;
+  errorCount: number;
 };
 
 export type Options = {
@@ -14,7 +16,7 @@ export type Options = {
   onStatusChange: (channels: Channel[]) => void;
   onError: (message: string) => void;
 };
-export type InitialsOptions = Pick<
+export type InitialOptions = Pick<
   Options,
   "checkIntervalTime" | "retryIntervalTime"
 >;

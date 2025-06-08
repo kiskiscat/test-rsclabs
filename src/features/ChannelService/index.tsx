@@ -3,17 +3,18 @@ import { CHANNELS } from "./constants";
 import { useConnectionManager } from "./helpers";
 
 export const ChannelService = () => {
-  const { channels, currentChannel, error } = useConnectionManager(CHANNELS);
+  const { channels, currentChannel, errorMessage } =
+    useConnectionManager(CHANNELS);
 
-  if (error) {
-    return <div>Произошла ошибка: {error}</div>;
+  if (errorMessage) {
+    return <div>Произошла ошибка: {errorMessage}</div>;
   }
 
   return (
-    <div>
+    <article role="main">
       <h1>Полезная информация</h1>
-      <section>
-        <h2>Информация о всех каналах</h2>
+      <section aria-labelledby="all-channels-heading">
+        <h2 id="all-channels-heading">Информация о всех каналах</h2>
         <ul>
           {channels.map((item) => (
             <li key={item.id}>
@@ -23,11 +24,11 @@ export const ChannelService = () => {
         </ul>
       </section>
       {currentChannel && (
-        <section>
-          <h2>Информация о текущем канале</h2>
+        <section aria-labelledby="current-channels-heading">
+          <h2 id="current-channels-heading">Информация о текущем канале</h2>
           <ChannelInfo info={currentChannel} />
         </section>
       )}
-    </div>
+    </article>
   );
 };
