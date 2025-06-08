@@ -7,7 +7,7 @@
     "preview": "vite preview",
     "build": "vite build",
     "typecheck": "tsc",
-    "format:prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(ts|tsx)\"",
+    "format:prettier": "prettier --ignore-path .gitignore --write .",
     "format:eslint": "eslint . --fix",
     "format": "npm-run-all --parallel format:eslint format:prettier",
     "stage": "npm-run-all typecheck format build"
