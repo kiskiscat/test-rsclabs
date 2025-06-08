@@ -1,6 +1,7 @@
 import { TestChannels } from "../test-channels";
-import { type Channel, type Intervals, type Options } from "../../types";
+import { type Channel, type Options } from "../../types";
 import { ChannelStatus } from "../../constants";
+import type { Intervals } from "./types";
 
 export class ConnectionManager {
   private channels: Channel[];
@@ -68,7 +69,7 @@ export class ConnectionManager {
 
   private switchChannel(): void {
     const availableChannel = this.channels.find(
-      (channel) => channel.status === ChannelStatus.Idle
+      (channel) => channel.status === ChannelStatus.Idle,
     );
 
     if (availableChannel) {
@@ -82,7 +83,7 @@ export class ConnectionManager {
 
   private async retryUnavailableChannels(): Promise<void> {
     const unavailableChannels = this.channels.filter(
-      (item) => item.status === ChannelStatus.Unavailable
+      (item) => item.status === ChannelStatus.Unavailable,
     );
 
     const checkedChannels = unavailableChannels.map(async (item) => {
@@ -96,7 +97,10 @@ export class ConnectionManager {
     await Promise.all(checkedChannels);
   }
 
-  private updateChannelStatus(channelId: string, status: ChannelStatus): void {
+  private updateChannelStatus(
+    channelId: Channel["id"],
+    status: ChannelStatus,
+  ): void {
     const updatedChannels = this.channels.map((item): Channel => {
       if (item.id === channelId) {
         const lastChecked = Date.now();

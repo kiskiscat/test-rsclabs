@@ -10,7 +10,7 @@ export const useConnectionManager = (initialChannels: Channel[]) => {
 
   const onStatusChange = (updatedChannels: Channel[]): void => {
     const newCurrentChannel = updatedChannels.find(
-      (item) => item.status === ChannelStatus.Connected
+      (item) => item.status === ChannelStatus.Connected,
     );
     const updatedCurrentChannel = newCurrentChannel ?? null;
 

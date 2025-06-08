@@ -5,7 +5,6 @@ export enum ChannelStatus {
   Connected = "CONNECTED",
   Unavailable = "UNAVAILABLE",
 }
-
 export const CHANNELS: Channel[] = [
   {
     id: "kakoetoApi1",
@@ -26,6 +25,7 @@ export const CHANNELS: Channel[] = [
     url: "wss://kakoetoApi3.example.com",
   },
 ];
+
 export const INITIALS_OPTIONS: InitialsOptions = {
   checkIntervalTime: 5000,
   retryIntervalTime: 30000,

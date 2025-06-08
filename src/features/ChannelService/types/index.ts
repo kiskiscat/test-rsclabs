@@ -18,8 +18,3 @@ export type InitialsOptions = Pick<
   Options,
   "checkIntervalTime" | "retryIntervalTime"
 >;
-
-export type Intervals = {
-  checkInterval: NodeJS.Timeout;
-  retryInterval: NodeJS.Timeout;
-};
