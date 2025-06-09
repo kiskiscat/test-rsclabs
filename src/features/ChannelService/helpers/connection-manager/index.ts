@@ -70,7 +70,7 @@ export class ConnectionManager {
       this.updateChannelInfo(channel.id, info);
 
       const isCurrentConnectionAlive =
-        channel.id === this.currentChannel?.id && isAlive;
+        channel.id === this.currentChannel!.id && isAlive;
 
       if (!isCurrentConnectionAlive) {
         this.switchChannel();
@@ -83,7 +83,7 @@ export class ConnectionManager {
 
       this.updateChannelInfo(channel.id, info);
 
-      if (channel.id === this.currentChannel?.id) {
+      if (channel.id === this.currentChannel!.id) {
         this.switchChannel();
       }
     } finally {

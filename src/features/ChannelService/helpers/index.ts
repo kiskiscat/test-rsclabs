@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { type Channel } from "../types";
 import { ConnectionManager } from "./connection-manager";
 import { ChannelStatus, INITIAL_OPTIONS } from "../constants";
 
 export const useConnectionManager = (initialChannels: Channel[]) => {
-  const managerRef = useRef<ConnectionManager | null>(null);
-
   const [channels, setChannels] = useState<Channel[]>(initialChannels);
   const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,17 +29,17 @@ export const useConnectionManager = (initialChannels: Channel[]) => {
       setErrorMessage(message);
     };
 
-    managerRef.current = new ConnectionManager(initialChannels, {
+    const manager = new ConnectionManager(initialChannels, {
       ...INITIAL_OPTIONS,
       onStatusChange,
       onError,
     });
 
-    managerRef.current.start();
+    manager.start();
 
     return () => {
       isMounted = false;
-      managerRef.current!.stop();
+      manager.stop();
     };
   }, [initialChannels]);
 
